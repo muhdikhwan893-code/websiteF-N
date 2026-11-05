@@ -12,10 +12,18 @@ const modalDescription = document.getElementById('modalDescription');
 const modalDetails = document.getElementById('modalDetails');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const productCards = document.querySelectorAll('.product-card');
+const heroSlider = document.getElementById('heroSlider');
+const sliderDots = document.getElementById('sliderDots');
+const sliderThumbs = document.getElementById('sliderThumbs');
+const sliderSlides = heroSlider ? Array.from(heroSlider.querySelectorAll('.slider-slide')) : [];
 const navLinks = document.querySelectorAll('.nav-menu a:not(.btn)');
 const sections = ['home', 'about', 'products', 'promotions', 'contact']
   .map((id) => document.getElementById(id))
   .filter(Boolean);
+
+let currentSlide = 0;
+let slideTimer = null;
+const slideCount = sliderSlides.length;
 
 const PRODUCTS = {
   '100plus': {
@@ -174,6 +182,156 @@ function setFilter(filter) {
   });
 }
 
+function updateSliderControls() {
+  const dots = sliderDots ? Array.from(sliderDots.querySelectorAll('.slider-dot')) : [];
+  const thumbs = sliderThumbs ? Array.from(sliderThumbs.querySelectorAll('.slider-thumb')) : [];
+
+  sliderSlides.forEach((slide, index) => {
+    const isActive = index === currentSlide;
+    slide.classList.toggle('active', isActive);
+    dots[index]?.classList.toggle('active', isActive);
+    thumbs[index]?.classList.toggle('active', isActive);
+    dots[index]?.setAttribute('aria-selected', String(isActive));
+    if (isActive) {
+      thumbs[index]?.setAttribute('aria-current', 'true');
+    } else {
+      thumbs[index]?.removeAttribute('aria-current');
+    }
+  });
+}
+
+function goToSlide(index) {
+  if (!slideCount) return;
+  currentSlide = (index + slideCount) % slideCount;
+  updateSliderControls();
+}
+
+function stopSliderAutoplay() {
+  if (slideTimer) {
+    window.clearInterval(slideTimer);
+    slideTimer = null;
+  }
+}
+
+function startSliderAutoplay() {
+  stopSliderAutoplay();
+  if (slideCount > 1) {
+    slideTimer = window.setInterval(() => goToSlide(currentSlide + 1), 4200);
+  }
+}
+
+function renderSliderControls() {
+  if (!heroSlider || !sliderDots || !sliderThumbs) return;
+
+  sliderDots.innerHTML = '';
+  sliderThumbs.innerHTML = '';
+
+  sliderSlides.forEach((slide, index) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'slider-dot';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Go to product slide ${index + 1}`);
+    dot.addEventListener('click', () => {
+      goToSlide(index);
+      startSliderAutoplay();
+    });
+    sliderDots.appendChild(dot);
+
+    const thumb = document.createElement('button');
+    thumb.type = 'button';
+    thumb.className = 'slider-thumb';
+    const title = slide.querySelector('.slider-caption strong');
+    thumb.setAttribute('aria-label', `Show ${title ? title.textContent : `product slide ${index + 1}`}`);
+    const slideImage = slide.querySelector('img');
+    if (slideImage) {
+      const thumbImage = document.createElement('img');
+      thumbImage.src = slideImage.getAttribute('src');
+      thumbImage.alt = '';
+      thumb.appendChild(thumbImage);
+    }
+    thumb.addEventListener('click', () => {
+      goToSlide(index);
+      startSliderAutoplay();
+    });
+    sliderThumbs.appendChild(thumb);
+  });
+
+  updateSliderControls();
+}
+
+function initHeroSlider() {
+  if (!heroSlider || !slideCount) return;
+
+  renderSliderControls();
+  goToSlide(0);
+  startSliderAutoplay();
+
+  heroSlider.querySelector('.slider-prev')?.addEventListener('click', () => {
+    goToSlide(currentSlide - 1);
+    startSliderAutoplay();
+  });
+
+  heroSlider.querySelector('.slider-next')?.addEventListener('click', () => {
+    goToSlide(currentSlide + 1);
+    startSliderAutoplay();
+  });
+
+  heroSlider.addEventListener('mouseenter', stopSliderAutoplay);
+  heroSlider.addEventListener('mouseleave', startSliderAutoplay);
+  heroSlider.addEventListener('focusin', stopSliderAutoplay);
+  heroSlider.addEventListener('focusout', (event) => {
+    if (!heroSlider.contains(event.relatedTarget)) {
+      startSliderAutoplay();
+    }
+  });
+
+  heroSlider.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goToSlide(currentSlide - 1);
+      startSliderAutoplay();
+    }
+    if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      goToSlide(currentSlide + 1);
+      startSliderAutoplay();
+    }
+  });
+
+  const stage = heroSlider.querySelector('.slider-stage');
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  stage?.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches[0].clientX;
+    touchStartY = event.changedTouches[0].clientY;
+    stopSliderAutoplay();
+  }, { passive: true });
+
+  stage?.addEventListener('touchend', (event) => {
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+    const deltaX = touchEndX - touchStartX;
+    const deltaY = touchEndY - touchStartY;
+
+    if (Math.abs(deltaX) > 42 && Math.abs(deltaX) > Math.abs(deltaY) * 1.2) {
+      goToSlide(currentSlide + (deltaX < 0 ? 1 : -1));
+    }
+    startSliderAutoplay();
+  }, { passive: true });
+
+  stage?.addEventListener('touchcancel', startSliderAutoplay, { passive: true });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopSliderAutoplay();
+    } else {
+      startSliderAutoplay();
+    }
+  });
+}
+
 function validateField(input) {
   const error = document.querySelector(`[data-error-for="${input.id}"]`);
   let message = '';
@@ -220,6 +378,8 @@ backToTop.addEventListener('click', () => {
 filterButtons.forEach((button) => {
   button.addEventListener('click', () => setFilter(button.dataset.filter));
 });
+
+initHeroSlider();
 
 document.querySelectorAll('[data-view-product]').forEach((button) => {
   button.addEventListener('click', () => openProductModal(button.dataset.viewProduct));

@@ -65,16 +65,54 @@
         </div>
 
         <div class="hero-visual reveal">
-          <div class="hero-image-wrap">
-            <img src="assets/hero-100plus.png" alt="F&N 100PLUS beverage bottles" />
-            <div class="floating-card floating-card-one">
-              <strong>100PLUS</strong>
-              <span>Peak hydration</span>
+          <div class="hero-slider" id="heroSlider" aria-roledescription="carousel" aria-label="F&N product slideshow">
+            <div class="slider-stage">
+              <div class="slider-slides">
+                <figure class="slider-slide active" data-slide="0">
+                  <img src="assets/product-100plus.png" alt="100PLUS isotonic beverage bottles" />
+                  <figcaption class="slider-caption"><strong>100PLUS</strong><span>Isotonic hydration</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="1">
+                  <img src="assets/product-seasons.png" alt="F&N SEASONS ice lemon tea bottle" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>F&amp;N SEASONS</strong><span>Natural tea refreshment</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="2">
+                  <img src="assets/product-fun-flavours.png" alt="F&N Fun Flavours fruitade drink" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>F&amp;N Fun Flavours</strong><span>Bold fruit-forward soda</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="3">
+                  <img src="assets/product-ice-cream-soda.png" alt="F&N Ice Cream Soda bottle" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>Ice Cream Soda</strong><span>Creamy frothy classic</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="4">
+                  <img src="assets/product-sarsi.png" alt="F&N Sarsi bottle" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>F&amp;N Sarsi</strong><span>Bold sarsaparilla taste</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="5">
+                  <img src="assets/product-orange.png" alt="F&N Orange soda bottle" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>F&amp;N Orange</strong><span>Zesty citrus soda</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="6">
+                  <img src="assets/product-grape.png" alt="F&N Grape soda bottle" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>F&amp;N Grape</strong><span>Sweet juicy flavour</span></figcaption>
+                </figure>
+                <figure class="slider-slide" data-slide="7">
+                  <img src="assets/product-strawberry.png" alt="F&N Strawberry soda bottle" loading="lazy" />
+                  <figcaption class="slider-caption"><strong>F&amp;N Strawberry</strong><span>Ripe sweet refreshment</span></figcaption>
+                </figure>
+              </div>
+
+              <button class="slider-btn slider-prev" type="button" aria-label="Previous product slide">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="slider-btn slider-next" type="button" aria-label="Next product slide">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+
+              <div class="slider-dots" id="sliderDots" role="tablist" aria-label="Choose product slide"></div>
             </div>
-            <div class="floating-card floating-card-two">
-              <strong>F&amp;N SEASONS</strong>
-              <span>Natural tea refreshment</span>
-            </div>
+
+            <div class="slider-thumbs" id="sliderThumbs" aria-label="Product thumbnails"></div>
           </div>
         </div>
       </div>
